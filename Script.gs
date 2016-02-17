@@ -14,13 +14,8 @@
       Written by James Marcogliese on 10/02/2016
       
       This is a standalone Google Apps script that generates a project 
-<<<<<<< HEAD
       folder directory based on any structure you provide. In addition to folders, the 
       script is also able to generate empty labelled docs and spreadsheets.
-=======
-      folder directory based on any structure you desire. In addition to folders, the 
-      script is also able to generate empty docs and spreadsheets labeled to whatever you desire.
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
       
       - - -   - -   - - -        
       H O W   T O   U S E
@@ -36,12 +31,9 @@
       
       4. Once done, go to the Run menu above and choose "generateFolderStructureFromSheet". Run. 
          The folder structure will generate!
-<<<<<<< HEAD
          
          IMPORTANT: For the script to function, only ONE copy of it should exist in your drive when run.
                     DO NOT CREATE DUPLICATES IN YOUR DRIVE. This is a limitation of the Google Script API.
-=======
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
       
       
       contact  :  james.marcogliese@gmail.com
@@ -55,27 +47,14 @@
 function createTemplateSheet() {
   
   function searchDrive(fileToSearch) {
-<<<<<<< HEAD
-=======
-    //var folderToSearch = "FolderName";
-    //var folders = DriveApp.getFoldersByName(folderToSearch);
-    //Logger.log(folders);
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
     var files = DriveApp.getFilesByName(fileToSearch);
     return files;
   }
   
-<<<<<<< HEAD
   function checkSpaceAvailable(bufferSize) {
     var storageLimit = DriveApp.getStorageLimit();
     var storageUsed = DriveApp.getStorageUsed();
     if (storageUsed >= storageLimit-bufferSize) {
-=======
-  function checkSpaceAvailable(bufferSize){
-    var storageLimit = DriveApp.getStorageLimit();
-    var storageUsed = DriveApp.getStorageUsed();
-    if (storageUsed >= storageLimit-bufferSize){
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
       return false;
     } else {
       return true;
@@ -89,7 +68,6 @@ function createTemplateSheet() {
     DriveApp.removeFile(file);
     return;
   }
-<<<<<<< HEAD
   // Check if space exists for file generation.
   var bufferSize = 5242880;
   if (!checkSpaceAvailable(bufferSize)) {
@@ -98,28 +76,13 @@ function createTemplateSheet() {
   
   //Create a Template Sheet and format it.
   var ssNew = SpreadsheetApp.create("ProjectDir Template Sheet");
-=======
-  
-  var bufferSize = 5242880;
-  if (!checkSpaceAvailable(bufferSize))
-  {
-    return;
-  } 
-  
-  //Create a Template Sheet
-  var ssNew = SpreadsheetApp.create("Template Sheet");
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
   var ss = SpreadsheetApp.openById(ssNew.getId());
   var sheet = ss.getSheets()[0];
   var values = [
     [ "NOTE: Use this sheet to template your folder structure. Below is an example you may use.", "", "", "", "", "" ],
     [ "The structure will also generate documents and spreadsheets if you require them.", "", "", "", "", "" ],
     [ "All folders MUST start with '/'. Documents MUST end with '.gdoc'. Spreadsheets MUST end with '.gsheet'.", "", "", "", "", "" ],
-<<<<<<< HEAD
     [ "Nested folders can be placed one row below and one column over to the right as shown below.", "", "", "", "", "" ],
-=======
-    [ "", "", "", "", "", "" ],
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
     [ "FirstFolderLevel", "SecondFolderLevel", "ThirdFolderLevel", "FourthFolderLevel", "FifthFolderLevel", "..." ],
     [ "Project Team.gdoc", "", "", "", "", "" ],
     [ "Meeting Notes.gdoc", "", "", "", "", "" ],
@@ -154,12 +117,7 @@ function createTemplateSheet() {
   }
   var files = searchDrive("Drive-ProjectDir");
   var scriptCount = 0;
-<<<<<<< HEAD
   var scriptId, scriptParent;
-=======
-  var scriptId;
-  var scriptParent;
->>>>>>> 40107a93ba171ec801a839cbe25b8ea66ffc8663
   while (files.hasNext()) {
     var file = files.next();
     scriptCount++;
