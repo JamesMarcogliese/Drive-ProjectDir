@@ -11,4 +11,4 @@ This is a standalone Google Apps script that generates a project folder director
 5. Once done, go to the Run menu and choose "generateFolderStructureFromSheet". Run. The folder structure will generate!
 
 IMPORTANT: For the script to function, only ONE copy of it should exist in your drive when run.
-           DO NOT CREATE DUPLICATES IN YOUR DRIVE. This is a limitation of the Google Script API.
+           DO NOT CREATE DUPLICATES IN YOUR DRIVE AND DO NOT RENAME THE SCRIPT. This is a limitation of the Google Script API.
