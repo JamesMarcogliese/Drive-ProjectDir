@@ -44,36 +44,74 @@
 
 *************************************************************************************************************************/
 
-function createTemplateSheet() {
-  
-  function searchDrive(fileToSearch) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// First Major Function. Generates Template Sheet.
+function createTemplateSheet(){
+  // Std function to search the drive for a file.
+  function searchDrive(fileToSearch){
     var files = DriveApp.getFilesByName(fileToSearch);
     return files;
   }
-  
-  function checkSpaceAvailable(bufferSize) {
+  // Function to check if a certain amount of space is avaiable for file generation.
+  function checkSpaceAvailable(bufferSize){
     var storageLimit = DriveApp.getStorageLimit();
     var storageUsed = DriveApp.getStorageUsed();
-    if (storageUsed >= storageLimit-bufferSize) {
+    if (storageUsed >= storageLimit-bufferSize){
       return false;
     } else {
       return true;
     }
   }
-  
-  function moveFileToFolder(fileId, targetFolderId) {
+  // Std function to move a file to a specified folder.
+  function moveFileToFolder(fileId, targetFolderId){
     var file = DriveApp.getFileById(fileId);
     var targetFolder = DriveApp.getFolderById(targetFolderId);
     targetFolder.addFile(file);
     DriveApp.removeFile(file);
     return;
   }
-  // Check if space exists for file generation.
+  // Beginning of script. Check if space exists for file generation.
   var bufferSize = 5242880;
-  if (!checkSpaceAvailable(bufferSize)) {
+  if (!checkSpaceAvailable(bufferSize)){
     return;
   } 
   
+  var files = searchDrive("Copy of Drive-ProjectDir");
+  if (files.hasNext()){
+  files.next().setName("Drive-ProjectDir");
+  }
   //Create a Template Sheet and format it.
   var ssNew = SpreadsheetApp.create("ProjectDir Template Sheet");
   var ss = SpreadsheetApp.openById(ssNew.getId());
@@ -115,6 +153,7 @@ function createTemplateSheet() {
   for (var i = 1; i<6;i++){
     sheet.setColumnWidth(i, 150);
   }
+  // Move the sheet to the same folder as the script.
   var files = searchDrive("Drive-ProjectDir");
   var scriptCount = 0;
   var scriptId, scriptParent;
@@ -130,8 +169,9 @@ function createTemplateSheet() {
   moveFileToFolder(ssNew.getId(), scriptParent.getId());
   return;
 }
-
-function generateFolderStructureFromSheet() {
+// Second Major Function. Creates folder/file structure from sheet.
+function generateFolderStructureFromSheet(){
+  // Std function to search the drive for a file.
   function checkSpaceAvailable(bufferSize){
     var storageLimit = DriveApp.getStorageLimit();
     var storageUsed = DriveApp.getStorageUsed();
@@ -141,23 +181,25 @@ function generateFolderStructureFromSheet() {
       return true;
     }
   }
-  
-  function moveFileToFolder(fileId, targetFolderId) {
+  // Std function to move a file to a specified folder.
+  function moveFileToFolder(fileId, targetFolderId){
     var file = DriveApp.getFileById(fileId);
     var targetFolder = DriveApp.getFolderById(targetFolderId);
     targetFolder.addFile(file);
     DriveApp.removeFile(file);
     return;
   }
-  
+  // Check if space exists for files to be created.
   var bufferSize = 5242880;
-  if (!checkSpaceAvailable(bufferSize)) {
+  if (!checkSpaceAvailable(bufferSize)){
     return;
   } 
-  function searchDrive(fileToSearch) {
+  // Calls search drive
+  function searchDrive(fileToSearch){
     var files = DriveApp.getFilesByName(fileToSearch);
     return files;
   }
+  // Finds the Template Sheet from the previous Major Function.
   var files = searchDrive("ProjectDir Template Sheet");
   var sheetCount = 0;
   var sheetId, sheetParent;
@@ -170,38 +212,46 @@ function generateFolderStructureFromSheet() {
   if (sheetCount > 1) {
     return;
   }
+  // Go through every row and generate accordingly.
   var ss = SpreadsheetApp.openById(sheetId);
   var sheet = ss.getSheets()[0];
   var data = sheet.getDataRange().getValues();
   var currentParent = sheetParent;
-  for (var i = 5; i < data.length; i++) {
-   //var row = "";
-   for (var j = 0; j < data[i].length; j++) {
-     if (data[i][j]) {
-       //row = row + data[i][j];
-       var stub = data[i][j].toString().trim();
-       if(stub.indexOf("/") == 0){
-         if(j == 0){
-           currentParent = sheetParent;
-         } else if (data[i-1][j]){
-           currentParent = currentParent.getParents().next();
-         }
-         stub = stub.substr(1);
-         currentParent.createFolder(stub);
-         currentParent = currentParent.getFoldersByName(stub).next();
-       } else if(stub.search(".gdoc") != -1) {
-         stub = stub.replace(".gdoc", "");
-         var ssNew = DocumentApp.create(stub);
-         moveFileToFolder(ssNew.getId(),currentParent.getId());
-       } else if(stub.search(".gsheet") != -1){
-         stub = stub.replace(".gsheet", "");
-         var ssNew = SpreadsheetApp.create(stub);
-         moveFileToFolder(ssNew.getId(),currentParent.getId());
-       }
-       
-     }
-     //row = row + ",";
-   }
-   //Logger.log(row);
- }
+  var lastlvl, lastitm;
+  for (var i = 5; i < data.length; i++){ // Row
+    for (var j = 0; j < data[i].length; j++){ //Column
+      if (data[i][j]) {
+        if (j == 0){
+          currentParent = sheetParent;
+        } else if (lastlvl == j && lastitm === "folder"){
+          currentParent = currentParent.getParents().next();
+        } else if (lastlvl > j){
+          while (lastlvl > j){
+            lastlvl--;  
+            currentParent = currentParent.getParents().next();
+          }
+        }
+        var stub = data[i][j].toString().trim();
+        if(stub.indexOf("/") == 0){
+          stub = stub.substr(1);
+          currentParent.createFolder(stub);
+          currentParent = currentParent.getFoldersByName(stub).next();
+          lastlvl = j;
+          lastitm = "folder";
+        } else if(stub.search(".gdoc") != -1) {
+          stub = stub.replace(".gdoc", "");
+          var ssNew = DocumentApp.create(stub);
+          moveFileToFolder(ssNew.getId(),currentParent.getId());
+          lastlvl = j;
+          lastitm = "file";
+        } else if(stub.search(".gsheet") != -1){
+          stub = stub.replace(".gsheet", "");
+          var ssNew = SpreadsheetApp.create(stub);
+          moveFileToFolder(ssNew.getId(),currentParent.getId());
+          lastlvl = j;
+          lastitm = "file";
+        } 
+      }
+    }
+  }
 }
