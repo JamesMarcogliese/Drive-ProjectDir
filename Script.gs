@@ -33,7 +33,7 @@
          The folder structure will generate!
          
          IMPORTANT: For the script to function, only ONE copy of it should exist in your drive when run.
-                    DO NOT CREATE DUPLICATES IN YOUR DRIVE. This is a limitation of the Google Script API.
+                    DO NOT CREATE DUPLICATES IN YOUR DRIVE AND DO NOT RENAME THE SCRIPT. This is a limitation of the Google Script API.
       
       
       contact  :  james.marcogliese@gmail.com
@@ -105,6 +105,7 @@ function createTemplateSheet(){
   // Beginning of script. Check if space exists for file generation.
   var bufferSize = 5242880;
   if (!checkSpaceAvailable(bufferSize)){
+    Logger.log("Insufficient Space!");
     return;
   } 
   
@@ -164,6 +165,7 @@ function createTemplateSheet(){
     scriptParent = file.getParents().next();
   }
   if (scriptCount > 1) {
+    Logger.log("More than one script of the same name was discovered. Aborted!");
     return;
   }
   moveFileToFolder(ssNew.getId(), scriptParent.getId());
@@ -192,6 +194,7 @@ function generateFolderStructureFromSheet(){
   // Check if space exists for files to be created.
   var bufferSize = 5242880;
   if (!checkSpaceAvailable(bufferSize)){
+    Logger.log("Insufficient Space!");
     return;
   } 
   // Calls search drive
@@ -210,6 +213,7 @@ function generateFolderStructureFromSheet(){
     sheetParent = file.getParents().next();
   }
   if (sheetCount > 1) {
+    Logger.log("More than one script of the same name was discovered. Aborted!");
     return;
   }
   // Go through every row and generate accordingly.
