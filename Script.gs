@@ -224,25 +224,25 @@ function generateFolderStructureFromSheet(){
   var lastlvl, lastitm;
   for (var i = 5; i < data.length; i++){ // Row
     for (var j = 0; j < data[i].length; j++){ //Column
-      if (data[i][j]) {
-        if (j == 0){
+      if (data[i][j]) { // If cell is filled...
+        if (j == 0){    // If in root, reset parent folder to root.
           currentParent = sheetParent;
-        } else if (lastlvl == j && lastitm === "folder"){
+        } else if (lastlvl == j && lastitm === "folder"){ // If previous level = current, rollback folder.
           currentParent = currentParent.getParents().next();
-        } else if (lastlvl > j){
+        } else if (lastlvl > j){ // If previous level was deeper, rollback until we are on the same level.
           while (lastlvl > j){
             lastlvl--;  
             currentParent = currentParent.getParents().next();
           }
         }
-        var stub = data[i][j].toString().trim();
+        var stub = data[i][j].toString().trim(); // If folder, create in currentDir and enter.
         if(stub.indexOf("/") == 0){
           stub = stub.substr(1);
           currentParent.createFolder(stub);
           currentParent = currentParent.getFoldersByName(stub).next();
           lastlvl = j;
           lastitm = "folder";
-        } else if(stub.search(".gdoc") != -1) {
+        } else if(stub.search(".gdoc") != -1) { // If doc, create and move to current level.
           stub = stub.replace(".gdoc", "");
           var ssNew = DocumentApp.create(stub);
           moveFileToFolder(ssNew.getId(),currentParent.getId());
